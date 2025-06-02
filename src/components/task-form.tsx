@@ -1,4 +1,4 @@
-import { useState, type FC } from 'react';
+import { useRef, useState, type FC } from 'react';
 import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -21,6 +21,7 @@ export const TaskForm: FC<TaskFormProps> = ({ addProject, onSubmit, projects }) 
   const [currentProject, setCurrentProject] = useState('');
   const [deadline, setDeadline] = useState<Date | null>(null);
   const [description, setDescription] = useState('');
+  const formRef = useRef<HTMLFormElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,15 +49,6 @@ export const TaskForm: FC<TaskFormProps> = ({ addProject, onSubmit, projects }) 
     setCurrentProject('');
     setVisibleProjects(projects);
   };
-
-  /**
-   * input text should be filtered by project name
-   * unless exact match, input text should be shown as a possible option
-   * if input text and project name are same then do not show input text separately
-   * if input text is empty then show all projects
-   * @param e 
-   * @returns 
-   */
 
   const onProjectSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const projectName = e.target.value.trim();
@@ -93,6 +85,7 @@ export const TaskForm: FC<TaskFormProps> = ({ addProject, onSubmit, projects }) 
       onSubmit={handleSubmit}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
+      ref={formRef}
     >
       <div className="flex flex-col gap-4">
         <div className="flex gap-4">
@@ -102,9 +95,10 @@ export const TaskForm: FC<TaskFormProps> = ({ addProject, onSubmit, projects }) 
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="w-full"
+            required
           />
 
-          <Select value={project} onValueChange={setProject}>
+          <Select value={project} onValueChange={setProject} required>
             <SelectTrigger className="flex-1/3 w-auto">
               <SelectValue placeholder="Select Project" />
             </SelectTrigger>
@@ -134,7 +128,7 @@ export const TaskForm: FC<TaskFormProps> = ({ addProject, onSubmit, projects }) 
         </div>
 
         <div className="flex gap-4">
-          <Select value={priority} onValueChange={onPriorityChange}>
+          <Select value={priority} onValueChange={onPriorityChange} required>
             <SelectTrigger className="capitalize flex-1/3 w-auto">
               <SelectValue placeholder="Priority" />
             </SelectTrigger>
@@ -156,6 +150,7 @@ export const TaskForm: FC<TaskFormProps> = ({ addProject, onSubmit, projects }) 
             value={deadline}
             onChange={setDeadline}
             className="w-full"
+            containerRef={formRef}
           />
         </div>
 

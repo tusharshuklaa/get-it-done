@@ -43,17 +43,6 @@ export const Modal: FC<ModalProps> = ({
 
   const contentClasses = cn("bg-slate-900 border-slate-500", className);
 
-  const handleInteractOutside = (event: Event) => {
-    // Check if the click is on a date picker calendar
-    const target = event.target as Element;
-    if (target.closest('[data-radix-popper-content-wrapper]') ||
-      target.closest('.rdp') ||
-      target.closest('[role="dialog"]')) {
-      event.preventDefault();
-      return;
-    }
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger className={triggerClassName}>
@@ -62,7 +51,6 @@ export const Modal: FC<ModalProps> = ({
 
       <DialogContent
         className={contentClasses}
-        onInteractOutside={handleInteractOutside}
       >
         {Boolean(title || description) && (
           <DialogHeader>
@@ -73,13 +61,11 @@ export const Modal: FC<ModalProps> = ({
 
         {children}
 
-        {
-          footer && (
-            <DialogFooter className={footerClassName}>
-              {footer}
-            </DialogFooter>
-          )
-        }
+        {footer && (
+          <DialogFooter className={footerClassName}>
+            {footer}
+          </DialogFooter>
+        )}
       </DialogContent>
     </Dialog>
   );

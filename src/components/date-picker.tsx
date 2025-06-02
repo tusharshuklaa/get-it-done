@@ -15,9 +15,10 @@ type DatePickerProps = {
   onChange?: (date: Date | null) => void;
   placeholder?: string;
   className?: string;
+  containerRef: React.RefObject<HTMLFormElement | null>;
 };
 
-export const DatePicker: FC<DatePickerProps> = ({ onChange, value }) => {
+export const DatePicker: FC<DatePickerProps> = ({ onChange, value, containerRef }) => {
   const [date, setDate] = useState<Date | null>(value);
 
   const onDateChange = (day: Date | undefined) => {
@@ -46,6 +47,7 @@ export const DatePicker: FC<DatePickerProps> = ({ onChange, value }) => {
 
       <PopoverContent
         className="w-auto p-0 z-55"
+        container={containerRef.current}
       >
         <Calendar
           mode="single"
