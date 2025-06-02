@@ -1,0 +1,1 @@
+export const delay = (maxTime: number = 1000) => new Promise(resolve => setTimeout(resolve, Math.random() * maxTime));
