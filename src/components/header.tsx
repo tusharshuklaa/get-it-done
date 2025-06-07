@@ -13,12 +13,14 @@ type HeaderProps = {
   className?: string;
   createTask: (task: Omit<Task, 'id' | 'completed'>) => void;
   onSort: (sortBy: typeof SORT_OPTIONS[number]) => void;
+  onSearch: (searchTerm: string) => void;
 };
 
 export const Header: FC<HeaderProps> = ({
   className,
   createTask,
   onSort,
+  onSearch,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -42,7 +44,10 @@ export const Header: FC<HeaderProps> = ({
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      <SearchBar />
+      <SearchBar
+        onSearch={onSearch}
+        placeholder="Search by task name, description, priority or project"
+      />
 
       <div className="flex gap-2 items-center justify-between">
         <Select onValueChange={onSort} defaultValue="date">

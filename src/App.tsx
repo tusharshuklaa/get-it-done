@@ -103,6 +103,17 @@ export default function App() {
     setFilteredTasks(sortedTasks);
   };
 
+  const onTaskSearch = (searchTerm: string) => {
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    const searchedTasks = tasks.filter(task =>
+      task.title.toLowerCase().includes(lowerCaseSearchTerm) ||
+      task.description.toLowerCase().includes(lowerCaseSearchTerm) ||
+      task.project.toLowerCase().includes(lowerCaseSearchTerm) ||
+      task.priority.toLowerCase().includes(lowerCaseSearchTerm)
+    );
+    setFilteredTasks(getSortedTasks(searchedTasks, 'date'));
+  };
+
   return (
     <div className="min-h-screen text-gray-100 flex">
       <Sidebar
@@ -112,7 +123,7 @@ export default function App() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 mx-auto w-full my-4 h-[calc(100vh-2rem)]">
         <div className="bg-slate-400 gap-8 p-6 w-full lg:col-span-2 rounded-tl-3xl rounded-bl-3xl">
-          <Header createTask={onTaskFormSubmit} onSort={onSortingChanged} />
+          <Header createTask={onTaskFormSubmit} onSort={onSortingChanged} onSearch={onTaskSearch} />
 
           <div className="flex flex-col">
             <TaskList
