@@ -13,9 +13,15 @@ export type Task = {
   completionDate?: string;
 }
 
-export const getTasks = async (): Promise<Array<Task>> => {
+export const getTasks = async (projectName?: string): Promise<Array<Task>> => {
   await delay();
-  return JSON.parse(localStorage.getItem("tasks") || "[]");
+  const allItems = JSON.parse(localStorage.getItem("tasks") || "[]");
+
+  if (!projectName || projectName === "all") {
+    return allItems;
+  }
+
+  return allItems.filter((task: Task) => task.project === projectName);
 };
 
 export const saveTasks = async (tasks: Array<Task>) => {
@@ -45,4 +51,20 @@ export const toggleTaskCompletion = async (taskId: string) => {
   );
   await saveTasks(updated);
   return updated;
+};
+
+export const removeTask = async (taskId: string) => {
+  const tasks = await getTasks();
+  const updated = tasks.filter((task) => task.id !== taskId);
+  await saveTasks(updated);
+
+  return [...updated];
+};
+
+export const updateTask = async (task: Task) => {
+  const tasks = await getTasks();
+  const updated = tasks.map((t) => (t.id === task.id ? { ...t, ...task } : t));
+  await saveTasks(updated);
+
+  return [...updated];
 };
