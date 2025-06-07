@@ -1,21 +1,41 @@
 import { useState, type FC } from 'react';
 import { motion } from 'framer-motion';
 import { PlusCircleIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { Button } from './ui/button';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { DEFAULT_PROJECT } from '@/utils/constants';
+import { useProjects } from '@/hooks/use-projects';
 
 type ProjectsWidgetProps = {
-  projects: Array<string>;
-  onProjectAdded: (project: string) => void;
+  onProjectChange: (project: string) => void;
   onProjectRemoved: (project: string) => void;
+  selectedProject: string;
 };
 
-export const ProjectsWidget: FC<ProjectsWidgetProps> = ({ projects, onProjectAdded, onProjectRemoved }) => {
+export const ProjectsWidget: FC<ProjectsWidgetProps> = ({
+  onProjectChange,
+  onProjectRemoved,
+  selectedProject = DEFAULT_PROJECT
+}) => {
   const [newProject, setNewProject] = useState('');
+  const { addNewProject, projects } = useProjects();
+
+  const getProjectItemClasses = (project: string) => {
+    return cn(
+      "p-3 bg-gray-700 rounded-lg flex items-center justify-between hover:bg-blue-600",
+      selectedProject === project && 'bg-blue-600 text-white'
+    );
+  };
 
   const onAddNewProject = () => {
-    if (newProject.trim()) {
-      onProjectAdded(newProject.trim());
-      setNewProject('');
+    addNewProject(newProject);
+    setNewProject('');
+  };
+
+  const handleProjectRemoved = (project: string) => {
+    if (project !== DEFAULT_PROJECT) {
+      onProjectRemoved(project);
+      setNewProject(DEFAULT_PROJECT);
     }
   };
 
@@ -54,25 +74,27 @@ export const ProjectsWidget: FC<ProjectsWidgetProps> = ({ projects, onProjectAdd
           </motion.p>
         )}
 
-        {!!projects?.length && projects.map((project) => (
+        {projects?.length && [DEFAULT_PROJECT, ...projects].map((project) => (
           <motion.div
             key={project}
-            className="p-3 bg-gray-700 rounded-lg flex items-center justify-between"
+            className={getProjectItemClasses(project)}
             whileHover={{ rotate: 1, scale: 1.02 }}
+            onClick={() => onProjectChange(project)}
           >
-            <span>{project}</span>
-            <span className="text-gray-400 text-sm">
-              {project === 'Inbox' ? 'Default' : ''}
-            </span>
-            <motion.button
-              type="button"
-              className='w-6 h-6 cursor-pointer text-red-400 hover:text-red-500'
-              aria-label={`Remove project ${project}`}
-              onClick={() => onProjectRemoved(project)}
-              whileHover={{ rotate: 180, scale: 1.02 }}
-            >
-              <XMarkIcon />
-            </motion.button>
+            <span className='capitalize'>{project}</span>
+            {
+              project !== DEFAULT_PROJECT && (
+                <motion.button
+                  type="button"
+                  className='w-6 h-6 cursor-pointer text-red-400 hover:text-red-500'
+                  aria-label={`Remove project ${project}`}
+                  onClick={() => handleProjectRemoved(project)}
+                  whileHover={{ rotate: 180, scale: 1.02 }}
+                >
+                  <XMarkIcon />
+                </motion.button>
+              )
+            }
           </motion.div>
         ))}
       </div>

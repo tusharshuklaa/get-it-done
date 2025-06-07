@@ -1,25 +1,23 @@
-import type { FC } from "react";
+import { useState, type FC } from "react";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 import { SearchBar } from "@/components/search-bar";
 import { Modal } from "@/components/modal";
 import { TaskForm } from "@/components/task-form";
 import type { Task } from "@/services/tasks";
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "./ui/button";
+import { buttonVariants } from "@/components/ui/button";
 
 type HeaderProps = {
   className?: string;
   onSubmit: (task: Omit<Task, 'id' | 'completed'>) => void;
-  projects: Array<string>;
-  addProject: (project: string) => void;
 };
 
 export const Header: FC<HeaderProps> = ({
   className,
   onSubmit,
-  projects,
-  addProject,
 }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const headerClasses = cn(
     "flex items-center w-full mb-12 text-white gap-12",
     className
@@ -46,11 +44,12 @@ export const Header: FC<HeaderProps> = ({
         trigger={<TriggerBtn />}
         title="Create a task"
         description="Add a new task to your project"
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
       >
         <TaskForm
-          projects={projects}
           onSubmit={onSubmit}
-          addProject={addProject}
+          toggleModal={(toggleBool: boolean) => setIsModalOpen(toggleBool)}
         />
       </Modal>
     </motion.header>

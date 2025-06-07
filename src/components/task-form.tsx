@@ -5,33 +5,29 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { DatePicker } from '@/components/date-picker';
+import { ComboBox } from '@/components/combobox';
 import { PRIORITIES, type Task } from '@/services/tasks';
+import { useProjects } from "@/hooks/use-projects";
 
 type TaskFormProps = {
   onSubmit: (task: Omit<Task, 'id' | 'completed'>) => void;
-  projects: Array<string>;
-  addProject: (project: string) => void;
+  toggleModal: (toggleBool: boolean) => void;
+  task?: Task | null;
+  deleteTask? : () => void;
 };
 
-export const TaskForm: FC<TaskFormProps> = ({ addProject, onSubmit, projects }) => {
-  const [title, setTitle] = useState('');
-  const [project, setProject] = useState('');
-  const [priority, setPriority] = useState<typeof PRIORITIES[number]>('medium');
-  const [visibleProjects, setVisibleProjects] = useState(projects);
-  const [currentProject, setCurrentProject] = useState('');
-  const [deadline, setDeadline] = useState<Date | null>(null);
-  const [description, setDescription] = useState('');
+export const TaskForm: FC<TaskFormProps> = ({ deleteTask, onSubmit, toggleModal, task }) => {
+  const [title, setTitle] = useState(task?.title || '');
+  const [project, setProject] = useState(task?.project || '');
+  const [priority, setPriority] = useState<typeof PRIORITIES[number]>(task?.priority || 'medium');
+  const { projects } = useProjects();
+  const [deadline, setDeadline] = useState<Date | null>(task ? new Date(task.deadline) : null);
+  const [description, setDescription] = useState(task?.description || '');
   const formRef = useRef<HTMLFormElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !project || !deadline) return;
-
-    // If the project is not in the list, add it
-    if (!projects.includes(project)) {
-      addProject(project);
-      setVisibleProjects([...visibleProjects, project]);
-    }
 
     onSubmit({
       title,
@@ -41,37 +37,13 @@ export const TaskForm: FC<TaskFormProps> = ({ addProject, onSubmit, projects }) 
       description,
     });
 
+    toggleModal(false);
+
     setTitle('');
     setProject('');
     setPriority('medium');
     setDeadline(null);
     setDescription('');
-    setCurrentProject('');
-    setVisibleProjects(projects);
-  };
-
-  const onProjectSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const projectName = e.target.value.trim();
-    setCurrentProject(projectName);
-
-    if (projectName === '') {
-      setVisibleProjects(projects);
-      return;
-    }
-
-    const filteredProjects = projects.filter(project => project.toLowerCase().includes(projectName.toLowerCase()));
-
-    if (filteredProjects.length === 0) {
-      setVisibleProjects([projectName]);
-    } else {
-      const hasAtLeastOneExactMatch = filteredProjects.some(project => project.toLowerCase() === projectName.toLowerCase());
-
-      if (!hasAtLeastOneExactMatch) {
-        setVisibleProjects([projectName, ...filteredProjects]);
-      } else {
-        setVisibleProjects(filteredProjects);
-      }
-    }
   };
 
   const onPriorityChange = (value: typeof PRIORITIES[number]) => {
@@ -98,33 +70,14 @@ export const TaskForm: FC<TaskFormProps> = ({ addProject, onSubmit, projects }) 
             required
           />
 
-          <Select value={project} onValueChange={setProject} required>
-            <SelectTrigger className="flex-1/3 w-auto">
-              <SelectValue placeholder="Select Project" />
-            </SelectTrigger>
-
-            <SelectContent className="relative">
-              <Input
-                type="text"
-                value={currentProject}
-                onChange={onProjectSearch}
-                placeholder="Search project"
-                className="mb-2"
-              />
-              {
-                visibleProjects
-                  .map(project => (
-                    <SelectItem
-                      key={project}
-                      value={project}
-                      className="text-white hover:text-black"
-                    >
-                      {project}
-                    </SelectItem>
-                  ))
-              }
-            </SelectContent>
-          </Select>
+          <ComboBox
+            value={project}
+            onChange={setProject}
+            options={projects}
+            placeholder="Select a project"
+            emptyMessage='No projects found'
+            containerRef={formRef}
+          />
         </div>
 
         <div className="flex gap-4">
@@ -161,13 +114,30 @@ export const TaskForm: FC<TaskFormProps> = ({ addProject, onSubmit, projects }) 
         />
       </div>
 
-      <Button
-        type="submit"
-        variant="default"
-        className="mt-4 w-full"
-      >
-        Add Task
-      </Button>
+      <div className="flex gap-4 justify-around items-center overflow-hidden">
+        {
+          !!task && (
+            <Button
+              type="button"
+              variant="destructive"
+              className="mt-4 w-[40%]"
+              onClick={deleteTask}
+            >
+              Delete Task
+            </Button>
+          )
+        }
+
+        <Button
+          type="submit"
+          variant="default"
+          className="mt-4 w-[40%]"
+        >
+          {
+            task ? 'Update Task' : 'Add Task'
+          }
+        </Button>
+      </div>
     </motion.form>
   );
 };

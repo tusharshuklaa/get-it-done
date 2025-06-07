@@ -15,7 +15,7 @@ type DatePickerProps = {
   onChange?: (date: Date | null) => void;
   placeholder?: string;
   className?: string;
-  containerRef: React.RefObject<HTMLFormElement | null>;
+  containerRef: React.RefObject<HTMLElement | null>;
 };
 
 export const DatePicker: FC<DatePickerProps> = ({ onChange, value, containerRef }) => {

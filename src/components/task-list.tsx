@@ -6,14 +6,22 @@ import { TaskItem } from '@/components/task-item';
 type TaskListProps = {
   tasks: Array<Task>;
   onToggle: (taskId: string) => void;
+  onDelete: (taskId: string) => void;
+  onTaskEdit: (task: Task) => void;
 }
 
-export const TaskList: FC<TaskListProps> = ({ tasks, onToggle }) => {
+export const TaskList: FC<TaskListProps> = ({ tasks, onDelete, onTaskEdit, onToggle }) => {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 overflow-y-auto overflow-x-hidden h-[calc(100vh-15.3rem)] relative pr-2">
       <AnimatePresence>
         {tasks.map((task) => (
-          <TaskItem key={task.id} task={task} onToggle={() => onToggle(task.id)} />
+          <TaskItem
+            key={task.id}
+            task={task}
+            onToggle={() => onToggle(task.id)}
+            onDelete={onDelete}
+            onTaskEdit={onTaskEdit}
+          />
         ))}
       </AnimatePresence>
       
