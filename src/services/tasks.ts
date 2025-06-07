@@ -1,6 +1,5 @@
 import { delay } from "@/utils/common";
-
-export const PRIORITIES = ['low', 'medium', 'high'] as const;
+import type { PRIORITIES } from "@/utils/constants";
 
 export type Task = {
   id: string;
@@ -9,7 +8,7 @@ export type Task = {
   completed: boolean;
   deadline: string;
   project: string;
-  priority: typeof PRIORITIES[number];
+  priority: keyof typeof PRIORITIES;
   completionDate?: string;
 }
 

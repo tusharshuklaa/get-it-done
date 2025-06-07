@@ -108,7 +108,12 @@ export const TaskItem: FC<TaskItemProps> = ({ task, onDelete, onTaskEdit, onTogg
             <p className="text-sm text-gray-400">{task.description}</p>
           )}
 
-          <div className="flex items-center gap-2 text-sm text-gray-400">
+          <div className={clsx(
+            "flex items-center gap-2 text-xs mt-2",
+            { 'text-red-500': isOverdue && !task.completed,
+              'text-gray-400': !isOverdue && !task.completed,
+            }
+          )}>
             <CalendarIcon className="w-4 h-4" />
             <span>{new Date(task.deadline).toLocaleDateString()}</span>
           </div>

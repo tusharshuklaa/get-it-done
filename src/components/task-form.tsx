@@ -6,8 +6,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { DatePicker } from '@/components/date-picker';
 import { ComboBox } from '@/components/combobox';
-import { PRIORITIES, type Task } from '@/services/tasks';
 import { useProjects } from "@/hooks/use-projects";
+import { PRIORITIES } from '@/utils/constants';
+import type { Task } from '@/services/tasks';
 
 type TaskFormProps = {
   onSubmit: (task: Omit<Task, 'id' | 'completed'>) => void;
@@ -19,7 +20,7 @@ type TaskFormProps = {
 export const TaskForm: FC<TaskFormProps> = ({ deleteTask, onSubmit, toggleModal, task }) => {
   const [title, setTitle] = useState(task?.title || '');
   const [project, setProject] = useState(task?.project || '');
-  const [priority, setPriority] = useState<typeof PRIORITIES[number]>(task?.priority || 'medium');
+  const [priority, setPriority] = useState<keyof typeof PRIORITIES>(task?.priority || 'medium');
   const { projects } = useProjects();
   const [deadline, setDeadline] = useState<Date | null>(task ? new Date(task.deadline) : null);
   const [description, setDescription] = useState(task?.description || '');
@@ -46,8 +47,8 @@ export const TaskForm: FC<TaskFormProps> = ({ deleteTask, onSubmit, toggleModal,
     setDescription('');
   };
 
-  const onPriorityChange = (value: typeof PRIORITIES[number]) => {
-    if (PRIORITIES.includes(value)) {
+  const onPriorityChange = (value: keyof typeof PRIORITIES) => {
+    if (Object.keys(PRIORITIES).includes(value)) {
       setPriority(value);
     }
   };
@@ -87,7 +88,7 @@ export const TaskForm: FC<TaskFormProps> = ({ deleteTask, onSubmit, toggleModal,
             </SelectTrigger>
 
             <SelectContent>
-              {PRIORITIES.map(priority => (
+              {Object.keys(PRIORITIES).map(priority => (
                 <SelectItem
                   key={priority}
                   value={priority}

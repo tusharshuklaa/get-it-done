@@ -53,7 +53,6 @@ export const DatePicker: FC<DatePickerProps> = ({ onChange, value, containerRef 
           mode="single"
           selected={date || undefined}
           onSelect={onDateChange}
-          initialFocus
         />
       </PopoverContent>
     </Popover>

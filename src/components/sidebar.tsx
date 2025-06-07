@@ -28,7 +28,19 @@ export const Sidebar: FC<SidebarProps> = ({filter, onFilterChange}) => {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      <h1 className="text-sm mb-8">Get It Done</h1>
+      <div className="flex justify-center items-center border border-teal-400 rounded-full p-2 w-14 h-14 mb-4">
+        <img
+          src="/logo.png"
+          alt="logo"
+          draggable="false"
+          loading="lazy"
+          decoding="async"
+          fetchPriority="high"
+          style={{ pointerEvents: "none" }}
+          width={48}
+          height={48}
+        />
+      </div>
 
       <motion.ul className="flex flex-col w-full h-full list-none gap-4 items-center">
         {TASK_STATUSES.map((ts: TaskStatus) => (

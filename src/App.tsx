@@ -1,22 +1,22 @@
 import { useEffect, useState } from 'react';
 import { getTasks, addTask, toggleTaskCompletion, type Task, updateTask, removeTask } from '@/services/tasks';
-import { Filters } from '@/components/filters';
 import { TaskList } from '@/components/task-list';
 import { Widgets } from '@/components/widgets';
 import { ProjectsWidget } from '@/components/projects-widget';
 import { Sidebar } from '@/components/sidebar';
 import { InfoBar } from '@/components/info-bar';
 import { Header } from '@/components/header';
-import { DEFAULT_PROJECT } from '@/utils/constants';
+import { CalendarWidget } from '@/components/calendar.widget';
+import { DEFAULT_PROJECT, DEFAULT_TASK_STATUS, PRIORITIES, SORT_OPTIONS, TASK_STATUSES } from '@/utils/constants';
 import { useProjects } from '@/hooks/use-projects';
 import './App.css';
 
 export default function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
-  const [selectedProject, setSelectedProject] = useState<string>('all');
-  const [filter, setFilter] = useState<'all' | 'completed' | 'pending'>('all');
-  const [selectedDeadlineFilter, setSelectedDeadlineFilter] = useState<string | null>(null);
+  const [selectedProject, setSelectedProject] = useState<string>(DEFAULT_PROJECT);
+  const [filter, setFilter] = useState<typeof TASK_STATUSES[number]>(DEFAULT_TASK_STATUS);
+  const [selectedDeadlineFilter, setSelectedDeadlineFilter] = useState<Date | null>(null);
   const { removeAProject } = useProjects();
 
   useEffect(() => {
@@ -31,12 +31,13 @@ export default function App() {
     const filteredTasks = tasks.filter(task => {
       const matchesProject = selectedProject === DEFAULT_PROJECT || task.project === selectedProject;
       const matchesStatus = filter === 'all' || (filter === 'completed' ? task.completed : !task.completed);
-      const matchedDeadline = !selectedDeadlineFilter || new Date(task.deadline).toISOString().split('T')[0] === selectedDeadlineFilter;
+      const matchedDeadline = !selectedDeadlineFilter
+        || new Date(task.deadline).toISOString().split('T')[0] === selectedDeadlineFilter.toISOString().split('T')[0];
 
       return matchesProject && matchesStatus && matchedDeadline;
     });
 
-    setFilteredTasks(filteredTasks);
+    setFilteredTasks(getSortedTasks(filteredTasks, 'date'));
   }, [filter, selectedDeadlineFilter, selectedProject, tasks]);
 
   const onTaskFormSubmit = async (task: Omit<Task, 'id' | 'completed'>) => {
@@ -72,6 +73,36 @@ export default function App() {
     setSelectedProject(DEFAULT_PROJECT);
   };
 
+  const onDateFilterChange = (date: Date | null) => {
+    if (date && date.toISOString() !== selectedDeadlineFilter?.toISOString()) {
+      setSelectedDeadlineFilter(date);
+    } else {
+      setSelectedDeadlineFilter(null);
+    }
+  };
+
+  const getSortedTasks = (tasks: Array<Task>, sortBy: 'date' | 'priority' | 'ascending' | 'descending') => {
+    const sortedTasks = [...tasks];
+
+    if (sortBy === 'date') {
+      sortedTasks.sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime());
+    } else if (sortBy === 'priority') {
+      sortedTasks.sort((a, b) => PRIORITIES[b.priority] - PRIORITIES[a.priority]);
+    } else if (sortBy === 'ascending') {
+      sortedTasks.sort((a, b) => a.title.localeCompare(b.title));
+    } else if (sortBy === 'descending') {
+      sortedTasks.sort((a, b) => b.title.localeCompare(a.title));
+    }
+
+    return sortedTasks;
+  };
+
+  const onSortingChanged = (sortBy: typeof SORT_OPTIONS[number]) => {
+    const sortedTasks = getSortedTasks(filteredTasks, sortBy);
+
+    setFilteredTasks(sortedTasks);
+  };
+
   return (
     <div className="min-h-screen text-gray-100 flex">
       <Sidebar
@@ -81,11 +112,9 @@ export default function App() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 mx-auto w-full my-4 h-[calc(100vh-2rem)]">
         <div className="bg-slate-400 gap-8 p-6 w-full lg:col-span-2 rounded-tl-3xl rounded-bl-3xl">
-          <Header onSubmit={onTaskFormSubmit} />
+          <Header createTask={onTaskFormSubmit} onSort={onSortingChanged} />
 
           <div className="flex flex-col">
-            <Filters onDateFilterChange={setSelectedDeadlineFilter} />
-
             <TaskList
               tasks={filteredTasks}
               onToggle={async (taskId) => {
@@ -98,7 +127,7 @@ export default function App() {
           </div>
         </div>
 
-        <InfoBar className="w-full lg:col-span-1 p-6">
+        <InfoBar className="flex gap-4 flex-col w-full p-6 overflow-y-auto overflow-x-hidden">
           <Widgets tasks={tasks} />
 
           <ProjectsWidget
@@ -106,6 +135,8 @@ export default function App() {
             selectedProject={selectedProject}
             onProjectChange={setSelectedProject}
           />
+
+          <CalendarWidget onDateChange={onDateFilterChange} tasks={tasks} />
         </InfoBar>
       </div>
     </div>

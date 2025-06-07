@@ -12,7 +12,7 @@ type TaskListProps = {
 
 export const TaskList: FC<TaskListProps> = ({ tasks, onDelete, onTaskEdit, onToggle }) => {
   return (
-    <div className="space-y-4 overflow-y-auto overflow-x-hidden h-[calc(100vh-15.3rem)] relative pr-2">
+    <div className="space-y-4 overflow-y-auto overflow-x-hidden h-[calc(100vh-9.3rem)] relative pr-2">
       <AnimatePresence>
         {tasks.map((task) => (
           <TaskItem
@@ -26,8 +26,8 @@ export const TaskList: FC<TaskListProps> = ({ tasks, onDelete, onTaskEdit, onTog
       </AnimatePresence>
       
       {tasks.length === 0 && (
-        <div className="text-center text-gray-400 py-8">
-          No tasks found. Add a new task to get started!
+        <div className="text-center text-black py-8">
+          No tasks found.
         </div>
       )}
     </div>

@@ -30,7 +30,7 @@ export const Widgets: FC<WidgetsProps> = ({ tasks }) => {
   const totalPendingTasks = tasks.filter(task => !task.completed).length;
 
   return (
-    <div className="grid grid-cols-2 gap-4 mb-8">
+    <div className="grid grid-cols-2 gap-4">
       <Widget
         title="Due Today"
         value={pendingToday}
