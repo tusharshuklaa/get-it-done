@@ -2,7 +2,7 @@
 
 ## What is this App?
 
-**Get It Done** is a productivity-focused application designed to help users organize tasks, manage schedules, and stay on top of their goals. With a sleek interface and powerful features, this app ensures you can plan your day effectively and accomplish more.
+**Get It Done** is a productivity-focused application designed to help users organize tasks, and stay on top of their goals. With a sleek interface and powerful features, this app ensures you can plan your day effectively and accomplish more.
 
 ## Features
 
