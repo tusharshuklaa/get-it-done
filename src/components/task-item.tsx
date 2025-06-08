@@ -122,7 +122,9 @@ export const TaskItem: FC<TaskItemProps> = ({ task, onDelete, onTaskEdit, onTogg
 
       <div className="flex flex-col items-end gap-2">
         {
-          task.project !== DEFAULT_PROJECT && <ProjectNameBadge completed={task.completed} projectName={task.project} />
+          !!task.project
+          && task.project !== DEFAULT_PROJECT
+          && <ProjectNameBadge completed={task.completed} projectName={task.project} />
         }
 
         {task.completionDate && (

@@ -2,23 +2,18 @@ import { useState, type FC } from 'react';
 import { motion } from 'framer-motion';
 import { PlusCircleIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { DEFAULT_PROJECT } from '@/utils/constants';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { useProjects } from '@/hooks/use-projects';
 
 type ProjectsWidgetProps = {
-  onProjectChange: (project: string) => void;
   onProjectRemoved: (project: string) => void;
-  selectedProject: string;
 };
 
-export const ProjectsWidget: FC<ProjectsWidgetProps> = ({
-  onProjectChange,
-  onProjectRemoved,
-  selectedProject = DEFAULT_PROJECT
-}) => {
+export const ProjectsWidget: FC<ProjectsWidgetProps> = ({ onProjectRemoved }) => {
   const [newProject, setNewProject] = useState('');
-  const { addNewProject, projects } = useProjects();
+  const { addNewProject, projects, selectedProject, updateSelectedProject } = useProjects();
 
   const getProjectItemClasses = (project: string) => {
     return cn(
@@ -27,7 +22,8 @@ export const ProjectsWidget: FC<ProjectsWidgetProps> = ({
     );
   };
 
-  const onAddNewProject = () => {
+  const onAddNewProject = (event: React.FormEvent) => {
+    event.preventDefault();
     addNewProject(newProject);
     setNewProject('');
   };
@@ -50,8 +46,8 @@ export const ProjectsWidget: FC<ProjectsWidgetProps> = ({
         Projects
       </h2>
 
-      <div className="flex gap-2 mb-4">
-        <input
+      <form className="flex gap-2 mb-4" onSubmit={onAddNewProject}>
+        <Input
           type="text"
           placeholder="New project"
           value={newProject}
@@ -59,13 +55,12 @@ export const ProjectsWidget: FC<ProjectsWidgetProps> = ({
           className="bg-gray-700 rounded-lg p-2 flex-1"
         />
         <Button
-          onClick={onAddNewProject}
-          type="button"
+          type="submit"
           variant="default"
         >
           Add
         </Button>
-      </div>
+      </form>
 
       <div className="space-y-2">
         {!projects?.length && (
@@ -74,12 +69,12 @@ export const ProjectsWidget: FC<ProjectsWidgetProps> = ({
           </motion.p>
         )}
 
-        {projects?.length && [DEFAULT_PROJECT, ...projects].map((project) => (
+        {!!projects?.length && [DEFAULT_PROJECT, ...projects].map((project) => (
           <motion.div
             key={project}
             className={getProjectItemClasses(project)}
             whileHover={{ rotate: 1, scale: 1.02 }}
-            onClick={() => onProjectChange(project)}
+            onClick={() => updateSelectedProject(project)}
           >
             <span className='capitalize'>{project}</span>
             {

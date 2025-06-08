@@ -1,12 +1,15 @@
 import { createContext, useCallback, useEffect, useMemo, useRef, useState, type FC } from "react";
 import { delay } from "@/utils/common";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { DEFAULT_PROJECT } from "@/utils/constants";
 
 type ProjectsProviderProps = {
   children: React.ReactNode;
 };
 
 type ProjectStore = {
+  selectedProject: string;
+  updateSelectedProject: (project: string) => void;
   projects: Array<string>;
   isLoading: boolean;
   isAdding: boolean;
@@ -18,6 +21,8 @@ type ProjectStore = {
 const PROJECTS_KEY = 'projects';
 
 export const ProjectsContext = createContext<ProjectStore>({
+  selectedProject: '',
+  updateSelectedProject: () => {},
   projects: [],
   isLoading: false,
   isAdding: false,
@@ -30,6 +35,7 @@ type TProjects = ProjectStore["projects"];
 
 export const ProjectsProvider: FC<ProjectsProviderProps> = ({ children }) => {
   const [projects, setProjects] = useState<TProjects>([]);
+  const [selectedProject, setSelectedProject] = useState<string>(DEFAULT_PROJECT);
   const [isLoading, setIsLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
@@ -107,6 +113,8 @@ export const ProjectsProvider: FC<ProjectsProviderProps> = ({ children }) => {
 
         return updatedProjects;
       });
+
+      setSelectedProject(DEFAULT_PROJECT);
     } finally {
       setIsRemoving(false);
     }
@@ -114,12 +122,14 @@ export const ProjectsProvider: FC<ProjectsProviderProps> = ({ children }) => {
 
   const projectStore = useMemo(() => ({
     projects,
+    selectedProject,
+    updateSelectedProject: setSelectedProject,
     isLoading,
     isAdding,
     isRemoving,
     addNewProject,
     removeAProject,
-  }), [addNewProject, isAdding, isLoading, isRemoving, projects, removeAProject]);
+  }), [addNewProject, isAdding, isLoading, isRemoving, projects, removeAProject, selectedProject]);
 
   return (
     <ProjectsContext.Provider value={projectStore}>

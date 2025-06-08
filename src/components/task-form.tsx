@@ -9,6 +9,7 @@ import { ComboBox } from '@/components/combobox';
 import { useProjects } from "@/hooks/use-projects";
 import { PRIORITIES } from '@/utils/constants';
 import type { Task } from '@/services/tasks';
+import { getPlainDate } from '@/lib/utils';
 
 type TaskFormProps = {
   onSubmit: (task: Omit<Task, 'id' | 'completed'>) => void;
@@ -21,20 +22,29 @@ export const TaskForm: FC<TaskFormProps> = ({ deleteTask, onSubmit, toggleModal,
   const [title, setTitle] = useState(task?.title || '');
   const [project, setProject] = useState(task?.project || '');
   const [priority, setPriority] = useState<keyof typeof PRIORITIES>(task?.priority || 'medium');
-  const { projects } = useProjects();
-  const [deadline, setDeadline] = useState<Date | null>(task ? new Date(task.deadline) : null);
+  const [deadline, setDeadline] = useState<string | null>(task ? task.deadline : null);
   const [description, setDescription] = useState(task?.description || '');
+  const [errorMsg, setErrorMsg] = useState('');
   const formRef = useRef<HTMLFormElement>(null);
+  const { projects } = useProjects();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !project || !deadline) return;
+    if (!title) {
+      setErrorMsg('Title is required');
+      return;
+    }
+
+    if (!deadline) {
+      setErrorMsg('Deadline is required');
+      return;
+    }
 
     onSubmit({
       title,
       project,
       priority,
-      deadline: new Date(deadline).toISOString(),
+      deadline,
       description,
     });
 
@@ -51,6 +61,11 @@ export const TaskForm: FC<TaskFormProps> = ({ deleteTask, onSubmit, toggleModal,
     if (Object.keys(PRIORITIES).includes(value)) {
       setPriority(value);
     }
+  };
+
+  const onDateChange = (date: Date | null) => {
+    const deadLineDate = date ? getPlainDate(date) : null;
+    setDeadline(deadLineDate);
   };
 
   return (
@@ -101,8 +116,8 @@ export const TaskForm: FC<TaskFormProps> = ({ deleteTask, onSubmit, toggleModal,
           </Select>
 
           <DatePicker
-            value={deadline}
-            onChange={setDeadline}
+            value={deadline ? new Date(deadline) : null}
+            onChange={onDateChange}
             className="w-full"
             containerRef={formRef}
           />
@@ -113,6 +128,13 @@ export const TaskForm: FC<TaskFormProps> = ({ deleteTask, onSubmit, toggleModal,
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
+        {
+          errorMsg && (
+            <span className="text-red-500 text-sm w-full">
+              <sup>* </sup>{errorMsg}
+            </span>
+          )
+        }
       </div>
 
       <div className="flex gap-4 justify-around items-center overflow-hidden">
@@ -121,7 +143,7 @@ export const TaskForm: FC<TaskFormProps> = ({ deleteTask, onSubmit, toggleModal,
             <Button
               type="button"
               variant="destructive"
-              className="mt-4 w-[40%]"
+              className="mt-4 min-w-[30%]"
               onClick={deleteTask}
             >
               Delete Task
@@ -132,7 +154,7 @@ export const TaskForm: FC<TaskFormProps> = ({ deleteTask, onSubmit, toggleModal,
         <Button
           type="submit"
           variant="default"
-          className="mt-4 w-[40%]"
+          className="mt-4 min-w-[30%]"
         >
           {
             task ? 'Update Task' : 'Add Task'

@@ -62,7 +62,7 @@ export const removeTask = async (taskId: string) => {
 
 export const updateTask = async (task: Task) => {
   const tasks = await getTasks();
-  const updated = tasks.map((t) => (t.id === task.id ? { ...t, ...task } : t));
+  const updated = tasks.map((t) => (t.id === task.id ? task : t));
   await saveTasks(updated);
 
   return [...updated];

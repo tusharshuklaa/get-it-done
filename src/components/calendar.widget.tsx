@@ -1,27 +1,22 @@
-import { useState, type FC } from 'react';
+import { useMemo, useState, type FC } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar } from '@/components/ui/calendar';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import type { Modifiers } from 'react-day-picker';
 import type { Task } from '@/services/tasks';
+import { getPlainDate } from '@/lib/utils';
 
 type CalendarWidgetProps = {
-  onDateChange?: (date: Date | null) => void;
+  onDateChange?: (date: string | null) => void;
   tasks: Array<Task>;
 };
 
 export const CalendarWidget: FC<CalendarWidgetProps> = ({ onDateChange, tasks }) => {
   const [selectedDate, setSelectedDate] = useState<Date>();
 
-  const selectedDateTasks = tasks.filter(task => {
-    const taskDate = new Date(task.deadline);
-    return (
-      selectedDate &&
-      taskDate.getFullYear() === selectedDate.getFullYear() &&
-      taskDate.getMonth() === selectedDate.getMonth() &&
-      taskDate.getDate() === selectedDate.getDate()
-    );
-  });
+  const selectedDateTasks = useMemo(() => tasks.filter(
+    task => !!selectedDate && task.deadline === getPlainDate(selectedDate)
+  ), [selectedDate, tasks]);
 
   const formattedDate = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(selectedDate);
 
@@ -30,7 +25,7 @@ export const CalendarWidget: FC<CalendarWidgetProps> = ({ onDateChange, tasks })
     : 'for today';
 
   const handleDayClick = (day: Date, modifiers: Modifiers) => {
-    const value = modifiers.selected ? null : day;
+    const value = modifiers.selected ? null : getPlainDate(day);
 
     if (onDateChange) {
       onDateChange(value);
