@@ -13,4 +13,6 @@ export const SORT_OPTIONS = [
   'ascending',
   'descending'
 ] as const;
-
+export const WEATHER_CACHE_KEY = 'weather_data';
+export const WEATHER_DEFAULT_UPDATE_INTERVAL = 60; // minutes
+export const WEATHER_CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds

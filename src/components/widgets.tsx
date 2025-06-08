@@ -1,6 +1,7 @@
 import type { FC } from "react";
 import type { Task } from "@/services/tasks";
 import { Widget } from "@/components/widget";
+import { WeatherWidget } from "@/components/weather-widget";
 
 type WidgetsProps = {
   tasks: Array<Task>;
@@ -27,10 +28,10 @@ export const Widgets: FC<WidgetsProps> = ({ tasks }) => {
     return !task.completed && taskDeadline >= startOfWeek && taskDeadline <= endOfWeek;
   }).length;
 
-  const totalPendingTasks = tasks.filter(task => !task.completed).length;
-
   return (
     <div className="grid grid-cols-2 gap-4">
+      <WeatherWidget />
+
       <Widget
         title="Due Today"
         value={pendingToday}
@@ -47,12 +48,6 @@ export const Widgets: FC<WidgetsProps> = ({ tasks }) => {
         title="Due This Week"
         value={pendingThisWeek}
         valueClassName="text-yellow-400"
-      />
-
-      <Widget
-        title="Total Tasks Due"
-        value={totalPendingTasks}
-        valueClassName="text-green-400"
       />
     </div>
   );
