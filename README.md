@@ -1,54 +1,62 @@
-# React + TypeScript + Vite
+# Get It Done
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## What is this App?
 
-Currently, two official plugins are available:
+**Get It Done** is a productivity-focused application designed to help users organize tasks, manage schedules, and stay on top of their goals. With a sleek interface and powerful features, this app ensures you can plan your day effectively and accomplish more.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+- **Task Management**: Create, edit, and delete tasks effortlessly.
+- **Weather Integration**: Get real-time weather updates using OpenWeatherMap API.
+- **Create Projects**: Organize your asks with custom projects.
+- **Widgets**: Get a quick glimpse of your overdue tasks.
+- **Cross-Platform**: Works seamlessly across devices.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## API Requirements
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+This app integrates with the following API:
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- **OpenWeatherMap API**: Used to fetch real-time weather data. You will need an API key from [OpenWeatherMap](https://openweathermap.org/api) to enable weather functionality.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Getting Started
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+Follow these steps to set up the project locally:
+
+### Prerequisites
+
+- Node.js (v16 or higher)
+- npm (v8 or higher)
+- OpenWeatherMap API key
+
+### Installation
+
+1. Clone the repository:
+  ```bash
+  git clone https://github.com/tusharshuklaa/get-it-done.git
+  cd get-it-done
+  ```
+
+2. Install dependencies:
+  ```bash
+  npm install
+  ```
+
+3. Create a `.env` file in the root directory and add your OpenWeatherMap API key:
+  ```env
+  VITE_WEATHER_API=your_api_key_here
+  ```
+
+4. Start the development server:
+  ```bash
+  npm start
+  ```
+
+5. Open your browser and navigate to `http://localhost:5173`.
+
+### Contributing
+
+Feel free to fork the repository and submit pull requests for new features or bug fixes.
+
+---
+
+Enjoy using **Get It Done** and boost your productivity!
