@@ -49,6 +49,7 @@ export const ProjectsWidget: FC<ProjectsWidgetProps> = ({ onProjectRemoved }) =>
       <form className="flex gap-2 mb-4" onSubmit={onAddNewProject}>
         <Input
           type="text"
+          id="newProject"
           placeholder="New project"
           value={newProject}
           onChange={(e) => setNewProject(e.target.value)}
