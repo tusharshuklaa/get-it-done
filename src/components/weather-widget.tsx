@@ -1,9 +1,10 @@
 import type { FC } from "react";
 import { motion } from "framer-motion";
 import { useWeather } from "@/hooks/use-weather";
+import { RefreshCcw } from "lucide-react";
 
 export const WeatherWidget: FC = () => {
-  const { weather, isLoading } = useWeather({
+  const { weather, isLoading, refresh } = useWeather({
     apiKey: import.meta.env.VITE_WEATHER_API || "",
     defaultCity: "Gurugram",
     updateInterval: 30,
@@ -15,6 +16,7 @@ export const WeatherWidget: FC = () => {
       className="p-4 bg-gray-800 rounded-lg relative flex items-end justify-between"
       whileHover={{ scale: 1.02 }}
     >
+      <RefreshCcw className="absolute right-2 top-2 cursor-pointer" size="15" onClick={refresh} />
       <div className="flex flex-col justify-between h-full">
         <h3 className="text-xl font-semibold">{isLoading ? '- -' : weather?.temperature}<sup>°C</sup></h3>
 
